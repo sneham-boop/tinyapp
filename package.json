@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/sneham-boop/tinyapp/issues"
   },
-  "homepage": "https://github.com/sneham-boop/tinyapp#readme"
+  "homepage": "https://github.com/sneham-boop/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.0"
+  }
 }
