@@ -47,12 +47,12 @@ const generateRandomString = () => {
 };
 
 // Function implementation for userExists()
-// Returns true if user email is found.
-const userExists = (email) => {
-  let exists = [];
+// Returns user id if user email is found.
+const findUserID = (email) => {
+  let id = "";
   const user_ids = Object.keys(users);
-  exists = user_ids.filter((user_id) => users[user_id].email === email);
-  return exists.length > 0;
+  id = user_ids.filter((user_id) => users[user_id].email === email);
+  return id[0];
 };
 
 // Routes
@@ -63,7 +63,7 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]],
   };
-  console.log("These are the current users, logged in /urls page:", users);
+  console.log("These are the existing users, urls page:", users);
   res.render("urls_index", templateVars);
 });
 
@@ -116,8 +116,14 @@ app.post("/urls/:shortURL", (req, res) => {
 
 // Login
 app.post("/login", (req, res) => {
-  const userName = req.body.username;
-  res.cookie("user_id", userName);
+  const email = req.body.email;
+  const password = req.body.password
+  
+  if(findUserID(email)) {
+    res.cookie("user_id", userID);
+    res.redirect("/urls");
+  }
+  console.log("email and password entered for login:", email, password);
   res.redirect("/urls");
 });
 
@@ -144,9 +150,9 @@ app.post("/register", (req, res) => {
   if (email === "" || password === "")
     res.status(400).send("Either email or password was an empty string!");
 
-  if (userExists(email)) {
+  if (findUserID(email)) {
     res.status(400).send("This user already exists! Enter a new email.");
-    console.log("Current user exists", userExists(email));
+    console.log("Current user exists, ID is:", findUserID(email));
   } else {
     // Add user
     users[userID] = {
