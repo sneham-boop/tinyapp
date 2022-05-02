@@ -5,9 +5,23 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
+// Test databases
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
+  b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+};
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
 };
 
 // Middlewares
@@ -32,21 +46,31 @@ const generateRandomString = () => {
   return randStr;
 };
 
+// Function implementation for userExists()
+// Returns true if user email is found.
+const userExists = (email) => {
+  let exists = [];
+  const user_ids = Object.keys(users);
+  exists = user_ids.filter((user_id) => users[user_id].email === email);
+  return exists.length > 0;
+};
+
 // Routes
 
 // Show all existing URLs
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
   };
+  console.log("These are the current users, logged in /urls page:", users);
   res.render("urls_index", templateVars);
 });
 
 // Route to show page for new URL addition
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
   };
   res.render("urls_new", templateVars);
 });
@@ -56,7 +80,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
   };
   res.render("urls_show", templateVars);
 });
@@ -93,22 +117,46 @@ app.post("/urls/:shortURL", (req, res) => {
 // Login
 app.post("/login", (req, res) => {
   const userName = req.body.username;
-  res.cookie("username", userName);
+  res.cookie("user_id", userName);
   res.redirect("/urls");
 });
 
 // Logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
-// Register new user
+// Register page new user
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
   };
   res.render("urls_register", templateVars);
+});
+
+// Accept new user registration data
+app.post("/register", (req, res) => {
+  const userID = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (email === "" || password === "")
+    res.status(400).send("Either email or password was an empty string!");
+
+  if (userExists(email)) {
+    res.status(400).send("This user already exists! Enter a new email.");
+    console.log("Current user exists", userExists(email));
+  } else {
+    // Add user
+    users[userID] = {
+      userID,
+      email,
+      password,
+    };
+    res.cookie("user_id", userID);
+    res.redirect("/urls");
+  }
 });
 
 app.listen(PORT, () => {
