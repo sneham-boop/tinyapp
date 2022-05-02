@@ -103,6 +103,14 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// Register new user
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("urls_register", templateVars);
+});
+
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
 });
