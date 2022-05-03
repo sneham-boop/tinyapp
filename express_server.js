@@ -37,17 +37,17 @@ app.use(cookieParser());
 // ** Helper functions ** //
 // Function implementation for generateRandomString()
 // Returns a randomly generated string of length strLen
-const generateRandomString = () => {
-  let randStr = "";
+const generateID = () => {
+  let id = "";
   let strLen = 6;
   const chars =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   for (let i = 0; i < strLen; i++) {
     const randIndex = Math.floor(Math.random() * chars.length);
-    randStr = randStr.concat(chars[randIndex]);
+    id = id.concat(chars[randIndex]);
   }
-  return randStr;
+  return id;
 };
 
 // Function implementation for findUser()
@@ -90,7 +90,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // Route to add a new URL
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
+  const shortURL = generateID();
   urlDatabase[shortURL] = req.body["longURL"];
   res.redirect("/urls");
 });
@@ -155,7 +155,7 @@ app.get("/register", (req, res) => {
 
 // Accept new user registration data
 app.post("/register", (req, res) => {
-  const id = generateRandomString();
+  const id = generateID();
   const { email, password } = req.body;
   const user = findUser(email);
 
