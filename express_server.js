@@ -51,7 +51,7 @@ const generateID = () => {
 };
 
 // Function implementation for findUser()
-// Returns user id if user email is found.
+// Returns user if user email is found.
 const findUser = (email) => {
   const user_ids = Object.keys(users);
   const id = user_ids.find((user_id) => users[user_id].email === email);
