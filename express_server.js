@@ -50,13 +50,13 @@ const generateRandomString = () => {
   return randStr;
 };
 
-// Function implementation for userExists()
+// Function implementation for findUser()
 // Returns user id if user email is found.
-const findUserID = (email) => {
-  let id = "";
+const findUser = (email) => {
   const user_ids = Object.keys(users);
-  id = user_ids.filter((user_id) => users[user_id].email === email);
-  return id[0];
+  const id = user_ids.find((user_id) => users[user_id].email === email);
+  const user = users[id];
+  return user;
 };
 
 // ** Routes ** //
@@ -67,7 +67,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]],
   };
-  console.log("These are the existing users, urls page:", users);
   res.render("urls_index", templateVars);
 });
 
@@ -96,7 +95,7 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls");
 });
 
-// Redirect small URL link to long URL
+// Redirect shortURL link to longURL
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
@@ -117,7 +116,6 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
-
 // Login page
 app.get("/login", (req, res) => {
   const templateVars = {
@@ -128,20 +126,16 @@ app.get("/login", (req, res) => {
 
 // Login
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const userID = findUserID(email);
-  if (userID) {
-    const passwordDB = users[userID].password;
-    if (passwordDB === password) {
-      res.cookie("user_id", userID);
-      console.log("email and password entered for login:", email, password);
-      res.redirect("/urls");
-    } else {
-      res.status(403).send("Password incorrect.");
-    }
+  const { email, password } = req.body;
+  const user = findUser(email);
+
+  if (!user) res.status(403).send("User does not exist.");
+
+  if (user.password === password) {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
   } else {
-    res.status(403).send("User does not exist.");
+    res.status(403).send("Password incorrect.");
   }
 });
 
@@ -161,28 +155,26 @@ app.get("/register", (req, res) => {
 
 // Accept new user registration data
 app.post("/register", (req, res) => {
-  const userID = generateRandomString();
-  const email = req.body.email;
-  const password = req.body.password;
+  const id = generateRandomString();
+  const { email, password } = req.body;
+  const user = findUser(email);
 
   if (email === "" || password === "")
-    res.status(400).send("Either email or password was an empty string!");
+    res.status(400).send("Enter a valid email and/or password.");
 
-  if (findUserID(email)) {
-    res.status(400).send("This user already exists! Enter a new email.");
-    console.log("Current user exists, ID is:", findUserID(email));
+  if (user) {
+    res.status(400).send("This user already exists. Enter a new email.");
   } else {
     // Add user
-    users[userID] = {
-      userID,
+    users[id] = {
+      id,
       email,
       password,
     };
-    res.cookie("user_id", userID);
+    res.cookie("user_id", id);
     res.redirect("/urls");
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
