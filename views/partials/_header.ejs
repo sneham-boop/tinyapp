@@ -11,11 +11,12 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if(user === undefined){ %>
-      <form class="form-inline d-flex justify-content" method="GET" action="/register">
-        <button type="submit" class="btn btn-light mr-2">Register</button>
-        <button type="submit" formaction="/login" class="btn btn-light">Login</button>
-      </form>
+    <% if(user===undefined){ %>
+      <a id="registerLink" class="d-flex justify-content-end mr-3" href="/register"
+        style="color:#ffffff80; text-decoration: none;" onMouseOver="this.style.color='#ffffffbf'"
+        onMouseOut="this.style.color='#ffffff80'">Register</a>
+      <a id="loginLink" class="d-flex justify-content-end" href="/login" style="color:#ffffff80; text-decoration: none;"
+        onMouseOver="this.style.color='#ffffffbf'" onMouseOut="this.style.color='#ffffff80'">Login</a>
       <% } else { %>
         <form class="form-inline d-flex justify-content-end" method="POST" action="/logout">
           <p class="h6 mb-0 mr-2">Logged in as: <%=user.email %>!
