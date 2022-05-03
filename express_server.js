@@ -1,9 +1,12 @@
-// Setup
+// ** Setup ** //
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
+
+// Static resources path
+app.use(express.static("public"));
 
 // Test databases
 const urlDatabase = {
@@ -31,6 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+// ** Helper functions ** //
 // Function implementation for generateRandomString()
 // Returns a randomly generated string of length strLen
 const generateRandomString = () => {
@@ -55,7 +59,7 @@ const findUserID = (email) => {
   return id[0];
 };
 
-// Routes
+// ** Routes ** //
 
 // Show all existing URLs
 app.get("/urls", (req, res) => {
@@ -89,7 +93,6 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body["longURL"];
-  // res.status(200).send("Ok");
   res.redirect("/urls");
 });
 
@@ -114,17 +117,32 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
+
+// Login page
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]],
+  };
+  res.render("urls_login", templateVars);
+});
+
 // Login
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password
-  
-  if(findUserID(email)) {
-    res.cookie("user_id", userID);
-    res.redirect("/urls");
+  const password = req.body.password;
+  const userID = findUserID(email);
+  if (userID) {
+    const passwordDB = users[userID].password;
+    if (passwordDB === password) {
+      res.cookie("user_id", userID);
+      console.log("email and password entered for login:", email, password);
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("Password incorrect.");
+    }
+  } else {
+    res.status(403).send("User does not exist.");
   }
-  console.log("email and password entered for login:", email, password);
-  res.redirect("/urls");
 });
 
 // Logout
@@ -165,13 +183,6 @@ app.post("/register", (req, res) => {
   }
 });
 
-// Login page
-app.get("/login", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]],
-  };
-  res.render("urls_login", templateVars);
-});
 
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
