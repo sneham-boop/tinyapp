@@ -77,6 +77,9 @@ app.get("/urls/new", (req, res) => {
     user: users[req.cookies["user_id"]],
     title: "New URL - TinyApp",
   };
+  if(!templateVars.user) {
+    res.redirect("/login");
+  }
   res.render("urls_new", templateVars);
 });
 
