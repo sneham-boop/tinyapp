@@ -1,4 +1,11 @@
-#loginLink,#registerLink {
+#loginLink,
+#registerLink {
   text-decoration: none;
-  color: red;
+  color: #ffffff80;
+}
+
+#loginLink:hover,
+#registerLink:hover {
+  text-decoration: none;
+  color: #ffffffbf;
 }

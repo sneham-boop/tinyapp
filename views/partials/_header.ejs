@@ -14,11 +14,8 @@
 
     <!-- Login/Register -->
     <% if(user===undefined){ %>
-      <a id="registerLink" class="d-flex justify-content-end mr-3" href="/register"
-        style="color:#ffffff80; text-decoration: none;" onMouseOver="this.style.color='#ffffffbf'"
-        onMouseOut="this.style.color='#ffffff80'">Register</a>
-      <a id="loginLink" class="d-flex justify-content-end" href="/login" style="color:#ffffff80; text-decoration: none;"
-        onMouseOver="this.style.color='#ffffffbf'" onMouseOut="this.style.color='#ffffff80'">Login</a>
+      <a id="registerLink" class="d-flex justify-content-end mr-3" href="/register">Register</a>
+      <a id="loginLink" class="d-flex justify-content-end" href="/login">Login</a>
       <% } else { %>
         <form class="form-inline d-flex justify-content-end" method="POST" action="/logout">
           <p class="h6 mb-0 mr-2">Logged in as: <%=user.email %>!
