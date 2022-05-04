@@ -66,6 +66,7 @@ app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]],
+    title: "TinyApp",
   };
   res.render("urls_index", templateVars);
 });
@@ -74,6 +75,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
+    title: "New URL - TinyApp",
   };
   res.render("urls_new", templateVars);
 });
@@ -84,6 +86,7 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
     user: users[req.cookies["user_id"]],
+    title: "URL Info - TinyApp",
   };
   res.render("urls_show", templateVars);
 });
@@ -120,6 +123,7 @@ app.post("/urls/:shortURL", (req, res) => {
 app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
+    title: "User login - TinyApp",
   };
   res.render("urls_login", templateVars);
 });
@@ -149,6 +153,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
+    title: "Register User - TinyApp",
   };
   res.render("urls_register", templateVars);
 });

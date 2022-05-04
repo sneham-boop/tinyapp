@@ -1,36 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('partials/_header') %>
+  <main>
+    <div class="container ml-0 mt-3 pl-0">
+      <h3 class="col">Login</h3>
+      <form class="col" action="/login" method="POST">
+        <label for="email">Email Address</label>
+        <input class="form-control ml-0 mt-0" type="email" name="email" placeholder="Enter your email"
+          style="width: 300px; margin: 1em">
+        <label for="password">Password</label>
+        <input class="form-control ml-0 mt-0" type="password" name="password" placeholder="Password"
+          style="width: 300px; margin: 1em">
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+    </div>
+  </main>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <%- include('partials/_bootstrap_scripts') %>
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <link rel="stylesheet" href="/css/styles.css"/>
-  <title>Login user</title>
-</head>
+    </body>
 
-<body>
-
-  <%- include('partials/_header') %>
-    <main>
-      <div class="container ml-0 mt-3 pl-0">
-        <h3 class="col">Login</h3>
-        <form class="col" action="/login" method="POST">
-          <label for="email">Email Address</label>
-          <input class="form-control ml-0 mt-0" type="email" name="email" placeholder="Enter your email"
-            style="width: 300px; margin: 1em">
-          <label for="password">Password</label>
-          <input class="form-control ml-0 mt-0" type="password" name="password" placeholder="Password"
-            style="width: 300px; margin: 1em">
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-      </div>
-    </main>
-
-    <%- include('partials/_bootstrap_scripts') %>
-
-</body>
-</html>
+    </html>

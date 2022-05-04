@@ -1,27 +1,28 @@
-<header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-success">
-    <a class="navbar-brand" href="/urls">TinyApp</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+<%- include('./_head') %>
+  <header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-success">
+      <a class="navbar-brand" href="/urls">TinyApp</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        </div>
       </div>
-    </div>
 
-    <!-- Login/Register -->
-    <% if(user===undefined){ %>
-      <a id="registerLink" class="d-flex justify-content-end mr-3" href="/register">Register</a>
-      <a id="loginLink" class="d-flex justify-content-end" href="/login">Login</a>
-      <% } else { %>
-        <form class="form-inline d-flex justify-content-end" method="POST" action="/logout">
-          <p class="h6 mb-0 mr-2">Logged in as: <%=user.email %>!
-          </p>
-          <button type="submit" class="btn btn-outline-dark" formmethod="POST" formaction="/logout">Logout</button>
-        </form>
-        <% } %>
-  </nav>
-</header>
+      <!-- Login/Register -->
+      <% if(user===undefined){ %>
+        <a id="registerLink" class="d-flex justify-content-end mr-3" href="/register">Register</a>
+        <a id="loginLink" class="d-flex justify-content-end" href="/login">Login</a>
+        <% } else { %>
+          <form class="form-inline d-flex justify-content-end" method="POST" action="/logout">
+            <p class="h6 mb-0 mr-2">Logged in as: <%=user.email %>!
+            </p>
+            <button type="submit" class="btn btn-outline-dark" formmethod="POST" formaction="/logout">Logout</button>
+          </form>
+          <% } %>
+    </nav>
+  </header>
