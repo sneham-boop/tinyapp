@@ -10,8 +10,14 @@ app.use(express.static("public"));
 
 // Test databases
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID",
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID",
+  },
 };
 
 const users = {
@@ -77,33 +83,46 @@ app.get("/urls/new", (req, res) => {
     user: users[req.cookies["user_id"]],
     title: "New URL - TinyApp",
   };
-  if(!templateVars.user) {
-    res.redirect("/login");
-  }
+  if (!templateVars.user) {
+    return res.redirect("/login");
+  } 
   res.render("urls_new", templateVars);
+  
 });
 
 // Show URL page
 app.get("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
   const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    shortURL,
+    longURL: urlDatabase[shortURL].longURL,
     user: users[req.cookies["user_id"]],
     title: "URL Info - TinyApp",
   };
+
   res.render("urls_show", templateVars);
 });
 
 // Route to add a new URL
 app.post("/urls", (req, res) => {
   const shortURL = generateID();
-  urlDatabase[shortURL] = req.body["longURL"];
+  urlDatabase[shortURL] = {
+    longURL: req.body["longURL"],
+    userID: req.cookies["user_id"],
+  };
+
   res.redirect("/urls");
 });
 
 // Redirect shortURL link to longURL
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const shortURL = req.params.shortURL;
+
+  // Valid shortURL?
+  if (!urlDatabase[shortURL]) {
+    return res.status(400).send("Page does not exist!")
+  }
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -118,7 +137,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = newLongURL;
+  urlDatabase[shortURL] = {
+    longURL: newLongURL,
+  };
   res.redirect("/urls");
 });
 
