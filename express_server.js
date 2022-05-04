@@ -24,7 +24,7 @@ const urlDatabase = {
   },
   "4r5T6y": {
     longURL: "https://github.com/",
-    userID: "b2xVn2",
+    userID: "9sm5xK",
   },
 };
 
@@ -83,15 +83,52 @@ const findUser = (email) => {
   return user;
 };
 
+// Function implementation for findURLs()
+// Returns URLs for user.
+const findURLs = (user) => {
+  const id = user.id;
+  /*
+  const userUrls = shortURLs
+    .filter((shortURL) => {
+      const urlData = urlDatabase[shortURL];
+      return urlData.userID === id;
+    })
+    .map((shortURL) => {
+      const urlData = urlDatabase[shortURL];
+      return { [shortURL]: urlData };
+    });
+
+  console.log(userUrls);
+  return userUrls; */
+
+  let urls = {};
+  for (const shortURL in urlDatabase) {
+    const urlData = urlDatabase[shortURL];
+    if (urlData.userID === id) {
+      urls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  // console.log(urls);
+  return urls;
+};
+
 // ** Routes ** //
 
 // Show all existing URLs
 app.get("/urls", (req, res) => {
+  const user = users[req.cookies["user_id"]];
+  if (!user) {
+    return res.redirect("/login");
+  }
+
+  const urls = findURLs(user);
+
   const templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies["user_id"]],
+    user,
+    urls,
     title: "TinyApp",
   };
+
   res.render("urls_index", templateVars);
 });
 
@@ -103,9 +140,8 @@ app.get("/urls/new", (req, res) => {
   };
   if (!templateVars.user) {
     return res.redirect("/login");
-  } 
+  }
   res.render("urls_new", templateVars);
-  
 });
 
 // Show URL page
@@ -138,7 +174,7 @@ app.get("/u/:shortURL", (req, res) => {
 
   // Valid shortURL?
   if (!urlDatabase[shortURL]) {
-    return res.status(400).send("Page does not exist!")
+    return res.status(400).send("Page does not exist!");
   }
   const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
@@ -157,6 +193,7 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = {
     longURL: newLongURL,
+    userID: req.cookies["user_id"],
   };
   res.redirect("/urls");
 });

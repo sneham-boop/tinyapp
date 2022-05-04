@@ -9,3 +9,16 @@
   text-decoration: none;
   color: #ffffffbf;
 }
+
+.generic-link, .generic-link:hover {
+  text-decoration: none;
+}
+
+.generic-link:hover {
+  background-color: black;
+  color: white;
+}
+
+#register-link-text {
+  margin-top: 5px;
+}
