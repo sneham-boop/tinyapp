@@ -18,6 +18,14 @@ const urlDatabase = {
     longURL: "http://www.google.com",
     userID: "user2RandomID",
   },
+  yb6ik8: {
+    longURL: "http://www.snehakm.com",
+    userID: "9sm5xK",
+  },
+  "4r5T6y": {
+    longURL: "https://github.com/",
+    userID: "b2xVn2",
+  },
 };
 
 const users = {
@@ -30,6 +38,16 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk",
+  },
+  "9sm5xK": {
+    id: "9sm5xK",
+    email: "bob@bob.com",
+    password: "bob",
+  },
+  b2xVn2: {
+    id: "b2xVn2",
+    email: "sneha@sneha.com",
+    password: "sneha",
   },
 };
 
