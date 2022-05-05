@@ -1,6 +1,16 @@
-<div class="permissions-container">
-      <div class="h3 mb-5">You are not logged in!</div>
-      <div>To see your URLs please login to your account <a class="generic-link" href="/login"> here</a>.</div>
-      <div>If you do not have an account, please register <a class="generic-link" href="/register"> here</a>.</div>
+<div class="card mb-5">
+      <div class="card-body">
+            <h5 class="card-title">Welcome to TinyApp!</h5>
+            <p class="card-text">Please log into your account or register for a new one to edit or delete your URLs.</p>
+            <% if(user===undefined){ %>
+                  <a href="/login" class="btn btn-primary">Login</a>
+                  <a href="/register" class="btn btn-primary">Register</a>
+                  <% } else { %>
+                        <form method="POST" action="/logout">
+                              <p class="card-text">Logged in as: <%=user.email %>!</p>
+                              <button type="submit" class="btn btn-outline-dark" formmethod="POST"
+                                    formaction="/logout">Logout</button>
+                        </form>
+                        <% } %>
+      </div>
 </div>
-  

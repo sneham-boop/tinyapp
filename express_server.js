@@ -8,7 +8,7 @@ app.set("view engine", "ejs");
 // Static resources path
 app.use(express.static("public"));
 
-// Test databases
+// Test databases for urls and registered users
 const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
@@ -55,7 +55,7 @@ const users = {
   },
 };
 
-// Middlewares
+// Middleware
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -112,7 +112,7 @@ app.get("/urls", (req, res) => {
   let urls = urlDatabase;
 
   if (!user)
-    message = "User not logged in! Login or register to access your URL's.";
+    message = "Please log into your account or register to edit or delete your URL's.";
 
   if (user) urls = findURLs(user);
 
@@ -132,7 +132,7 @@ app.get("/urls/new", (req, res) => {
     title: "New URL - TinyApp",
   };
   if (!templateVars.user) {
-    return res.redirect("/login");
+    return res.status(403).send("<h1>You must log in to create a new URL.</h1>");
   }
   res.render("urls_new", templateVars);
 });
@@ -178,9 +178,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.cookies["user_id"];
 
-  if(!userID) {
-    return res.redirect("/login");
+  if (!userID) {
+    return res.status(403).send("<h1>You must log in to delete this URL.</h1>");
   }
+
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
@@ -191,8 +192,8 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.cookies["user_id"];
 
-  if(!userID) {
-    return res.redirect("/login");
+  if (!userID) {
+    return res.status(403).send("<h1>You must log in to edit this URL.</h1>");
   }
 
   urlDatabase[shortURL] = {
@@ -208,6 +209,7 @@ app.get("/login", (req, res) => {
     user: users[req.cookies["user_id"]],
     title: "User login - TinyApp",
   };
+
   res.render("urls_login", templateVars);
 });
 
@@ -216,13 +218,13 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = findUser(email);
 
-  if (!user) res.status(403).send("User does not exist.");
+  if (!user) res.status(403).send("<h1>This user does not exist. Please log in as a different user.</h1>");
 
   if (user.password === password) {
     res.cookie("user_id", user.id);
     res.redirect("/urls");
   } else {
-    res.status(403).send("Password incorrect.");
+    res.status(403).send("<h1>This password is incorrect.</h1>");
   }
 });
 
@@ -248,10 +250,10 @@ app.post("/register", (req, res) => {
   const user = findUser(email);
 
   if (email === "" || password === "")
-    res.status(400).send("Enter a valid email and/or password.");
+    res.status(400).send("<h1>Enter a valid email and/or password.</h1>");
 
   if (user) {
-    res.status(400).send("This user already exists. Enter a new email.");
+    res.status(400).send("<h1>This user already exists. Enter a new email.</h1>");
   } else {
     // Add user
     users[id] = {
@@ -263,7 +265,6 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
