@@ -24,7 +24,11 @@ const urlDatabase = {
   },
   "4r5T6y": {
     longURL: "https://github.com/",
-    userID: "9sm5xK",
+    userID: "b2xVn2",
+  },
+  "4ry76y": {
+    longURL: "https://www.snehakm.com/",
+    userID: "b2xVn2",
   },
 };
 
@@ -86,20 +90,7 @@ const findUser = (email) => {
 // Function implementation for findURLs()
 // Returns URLs for user.
 const findURLs = (user) => {
-  const id = user.id;
-  /*
-  const userUrls = shortURLs
-    .filter((shortURL) => {
-      const urlData = urlDatabase[shortURL];
-      return urlData.userID === id;
-    })
-    .map((shortURL) => {
-      const urlData = urlDatabase[shortURL];
-      return { [shortURL]: urlData };
-    });
-
-  console.log(userUrls);
-  return userUrls; */
+  const { id } = user;
 
   let urls = {};
   for (const shortURL in urlDatabase) {
@@ -108,7 +99,7 @@ const findURLs = (user) => {
       urls[shortURL] = urlDatabase[shortURL];
     }
   }
-  // console.log(urls);
+
   return urls;
 };
 
@@ -117,18 +108,20 @@ const findURLs = (user) => {
 // Show all existing URLs
 app.get("/urls", (req, res) => {
   const user = users[req.cookies["user_id"]];
-  if (!user) {
-    return res.redirect("/login");
-  }
+  let message = "";
+  let urls = urlDatabase;
 
-  const urls = findURLs(user);
+  if (!user)
+    message = "User not logged in! Login or register to access your URL's.";
+
+  if (user) urls = findURLs(user);
 
   const templateVars = {
     user,
     urls,
+    message,
     title: "TinyApp",
   };
-
   res.render("urls_index", templateVars);
 });
 
@@ -183,6 +176,11 @@ app.get("/u/:shortURL", (req, res) => {
 // Delete long URL row
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
+  const userID = req.cookies["user_id"];
+
+  if(!userID) {
+    return res.redirect("/login");
+  }
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
@@ -191,6 +189,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.shortURL;
+  const userID = req.cookies["user_id"];
+
+  if(!userID) {
+    return res.redirect("/login");
+  }
+
   urlDatabase[shortURL] = {
     longURL: newLongURL,
     userID: req.cookies["user_id"],
@@ -259,6 +263,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
