@@ -112,8 +112,10 @@ app.get("/urls", (req, res) => {
   let urls = urlDatabase;
 
   if (!user)
-    message = "Please log into your account or register to edit or delete your URL's.";
+    message =
+      "Please log into your account or register to edit or delete your URL's.";
 
+  // Show filtered URL's
   if (user) urls = urlsForUser(user);
 
   const templateVars = {
@@ -131,9 +133,11 @@ app.get("/urls/new", (req, res) => {
     user: users[req.cookies["user_id"]],
     title: "New URL - TinyApp",
   };
-  if (!templateVars.user) {
-    return res.status(403).send("<h1>You must log in to create a new URL.</h1>");
-  }
+  if (!templateVars.user)
+    return res
+      .status(403)
+      .send("<h1>You must log in to create a new URL.</h1>");
+
   res.render("urls_new", templateVars);
 });
 
@@ -166,9 +170,9 @@ app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
 
   // Valid shortURL?
-  if (!urlDatabase[shortURL]) {
+  if (!urlDatabase[shortURL])
     return res.status(400).send("Page does not exist!");
-  }
+
   const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
@@ -178,9 +182,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.cookies["user_id"];
 
-  if (!userID) {
+  if (!userID)
     return res.status(403).send("<h1>You must log in to delete this URL.</h1>");
-  }
 
   delete urlDatabase[shortURL];
   res.redirect("/urls");
@@ -192,9 +195,8 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.cookies["user_id"];
 
-  if (!userID) {
+  if (!userID)
     return res.status(403).send("<h1>You must log in to edit this URL.</h1>");
-  }
 
   urlDatabase[shortURL] = {
     longURL: newLongURL,
@@ -210,7 +212,7 @@ app.get("/login", (req, res) => {
     title: "User login - TinyApp",
   };
 
-  if(templateVars.user) return res.redirect("/urls");
+  if (templateVars.user) return res.redirect("/urls");
 
   res.render("urls_login", templateVars);
 });
@@ -220,7 +222,10 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = findUser(email);
 
-  if (!user) res.status(403).send("<h1>This user does not exist. Please log in as a different user.</h1>");
+  if (!user)
+    res
+      .status(403)
+      .send("<h1>This user does not exist. Please log in as a different user.</h1>");
 
   if (user.password === password) {
     res.cookie("user_id", user.id);
@@ -243,7 +248,7 @@ app.get("/register", (req, res) => {
     title: "Register User - TinyApp",
   };
 
-  if(templateVars.user) return res.redirect("/urls");
+  if (templateVars.user) return res.redirect("/urls");
 
   res.render("urls_register", templateVars);
 });
@@ -258,7 +263,9 @@ app.post("/register", (req, res) => {
     res.status(400).send("<h1>Enter a valid email and/or password.</h1>");
 
   if (user) {
-    res.status(400).send("<h1>This user already exists. Enter a new email.</h1>");
+    res
+      .status(400)
+      .send("<h1>This user already exists. Enter a new email.</h1>");
   } else {
     // Add user
     users[id] = {
