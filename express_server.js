@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const bcrypt = require("bcryptjs");
 
 app.set("view engine", "ejs");
 
@@ -36,22 +37,22 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    hashedPassword: "purple-monkey-dinosaur",
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    hashedPassword: "dishwasher-funk",
   },
   "9sm5xK": {
     id: "9sm5xK",
     email: "bob@bob.com",
-    password: "bob",
+    hashedPassword: "bob",
   },
   b2xVn2: {
     id: "b2xVn2",
     email: "sneha@sneha.com",
-    password: "sneha",
+    hashedPassword: "sneha",
   },
 };
 
@@ -223,16 +224,16 @@ app.post("/login", (req, res) => {
   const user = findUser(email);
 
   if (!user)
-    res
+    return res
       .status(403)
       .send("<h1>This user does not exist. Please log in as a different user.</h1>");
 
-  if (user.password === password) {
-    res.cookie("user_id", user.id);
-    res.redirect("/urls");
-  } else {
-    res.status(403).send("<h1>This password is incorrect.</h1>");
-  }
+  const checkPassword = bcrypt.compareSync(password, user.hashedPassword);
+  if (!checkPassword)
+    return res.status(403).send("<h1>This password is incorrect.</h1>");
+
+  res.cookie("user_id", user.id);
+  res.redirect("/urls");
 });
 
 // Logout
@@ -257,6 +258,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateID();
   const { email, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const user = findUser(email);
 
   if (email === "" || password === "")
@@ -271,7 +273,7 @@ app.post("/register", (req, res) => {
     users[id] = {
       id,
       email,
-      password,
+      hashedPassword,
     };
     res.cookie("user_id", id);
     res.redirect("/urls");
