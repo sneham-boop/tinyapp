@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 
+
 app.set("view engine", "ejs");
 
 // Static resources path
@@ -60,8 +61,14 @@ const users = {
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
+var cookieSession = require('cookie-session')
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 // ** Helper functions ** //
 // Function implementation for generateRandomString()
@@ -108,7 +115,7 @@ const urlsForUser = (user) => {
 
 // Show all existing URLs
 app.get("/urls", (req, res) => {
-  const user = users[req.cookies["user_id"]];
+  const user = users[req.session.user_id];
   let message = "";
   let urls = urlDatabase;
 
@@ -131,7 +138,7 @@ app.get("/urls", (req, res) => {
 // Route to show page for new URL addition
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     title: "New URL - TinyApp",
   };
   if (!templateVars.user)
@@ -148,7 +155,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL,
     longURL: urlDatabase[shortURL].longURL,
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     title: "URL Info - TinyApp",
   };
 
@@ -160,7 +167,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateID();
   urlDatabase[shortURL] = {
     longURL: req.body["longURL"],
-    userID: req.cookies["user_id"],
+    userID: req.session.user_id,
   };
 
   res.redirect("/urls");
@@ -181,7 +188,7 @@ app.get("/u/:shortURL", (req, res) => {
 // Delete long URL row
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
 
   if (!userID)
     return res.status(403).send("<h1>You must log in to delete this URL.</h1>");
@@ -194,14 +201,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const newLongURL = req.body.longURL;
   const shortURL = req.params.shortURL;
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
 
   if (!userID)
     return res.status(403).send("<h1>You must log in to edit this URL.</h1>");
 
   urlDatabase[shortURL] = {
     longURL: newLongURL,
-    userID: req.cookies["user_id"],
+    userID: req.session.user_id,
   };
   res.redirect("/urls");
 });
@@ -209,7 +216,7 @@ app.post("/urls/:shortURL", (req, res) => {
 // Login page
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     title: "User login - TinyApp",
   };
 
@@ -232,20 +239,20 @@ app.post("/login", (req, res) => {
   if (!checkPassword)
     return res.status(403).send("<h1>This password is incorrect.</h1>");
 
-  res.cookie("user_id", user.id);
+  req.session.user_id = user.id;
   res.redirect("/urls");
 });
 
 // Logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
 // Register page new user
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     title: "Register User - TinyApp",
   };
 
@@ -275,7 +282,8 @@ app.post("/register", (req, res) => {
       email,
       hashedPassword,
     };
-    res.cookie("user_id", id);
+
+    req.session.user_id = users[id].id;
     res.redirect("/urls");
   }
 });
