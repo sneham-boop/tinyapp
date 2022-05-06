@@ -89,7 +89,7 @@ const findUser = (email) => {
 
 // Function implementation for findURLs()
 // Returns URLs for user.
-const findURLs = (user) => {
+const urlsForUser = (user) => {
   const { id } = user;
 
   let urls = {};
@@ -114,7 +114,7 @@ app.get("/urls", (req, res) => {
   if (!user)
     message = "Please log into your account or register to edit or delete your URL's.";
 
-  if (user) urls = findURLs(user);
+  if (user) urls = urlsForUser(user);
 
   const templateVars = {
     user,
@@ -210,6 +210,8 @@ app.get("/login", (req, res) => {
     title: "User login - TinyApp",
   };
 
+  if(templateVars.user) return res.redirect("/urls");
+
   res.render("urls_login", templateVars);
 });
 
@@ -240,6 +242,9 @@ app.get("/register", (req, res) => {
     user: users[req.cookies["user_id"]],
     title: "Register User - TinyApp",
   };
+
+  if(templateVars.user) return res.redirect("/urls");
+
   res.render("urls_register", templateVars);
 });
 
