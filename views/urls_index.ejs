@@ -1,6 +1,7 @@
 <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <%- include('partials/_permission') %>
+    <% if( showURLs ) { %>
     <h3>Tiny URLs</h3>
     <table class="table">
       <thead>
@@ -38,6 +39,11 @@
           <% } %>
       </tbody>
     </table>
+    <% if(numberOfURLs === 0) { %>
+      <p id="no-urls" class="text-center">You currently have no tiny URLs. Create a tiny URL!</p>
+    <% } %>
+    <% } %>
+    
   </main>
   <%- include('partials/_bootstrap_scripts') %>
     </body>

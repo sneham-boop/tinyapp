@@ -1,8 +1,8 @@
 <div class="card mb-5">
       <div class="card-body">
             <h5 class="card-title">Welcome to TinyApp!</h5>
-            <p class="card-text">Please log into your account or register for a new one to edit or delete your URLs.</p>
             <% if(user===undefined){ %>
+                  <p class="card-text">Please log into your account or register for a new one to see your URLs.</p>
                   <a href="/login" class="btn btn-primary">Login</a>
                   <a href="/register" class="btn btn-primary">Register</a>
                   <% } else { %>

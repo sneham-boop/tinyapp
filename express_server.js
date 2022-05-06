@@ -4,7 +4,6 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 
-
 app.set("view engine", "ejs");
 
 // Static resources path
@@ -61,14 +60,16 @@ const users = {
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var cookieSession = require('cookie-session')
-app.use(cookieSession({
-  name: 'session',
-  keys: ['key1', 'key2'],
+var cookieSession = require("cookie-session");
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1", "key2"],
 
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  })
+);
 
 // ** Helper functions ** //
 // Function implementation for generateRandomString()
@@ -116,20 +117,20 @@ const urlsForUser = (user) => {
 // Show all existing URLs
 app.get("/urls", (req, res) => {
   const user = users[req.session.user_id];
-  let message = "";
-  let urls = urlDatabase;
+  let showURLs = true;
+  let urls = {};
 
-  if (!user)
-    message =
-      "Please log into your account or register to edit or delete your URL's.";
+  if (!user) showURLs = false;
 
   // Show filtered URL's
   if (user) urls = urlsForUser(user);
+  const numberOfURLs = Object.keys(urls).length;
 
   const templateVars = {
     user,
     urls,
-    message,
+    showURLs,
+    numberOfURLs,
     title: "TinyApp",
   };
   res.render("urls_index", templateVars);
@@ -152,6 +153,7 @@ app.get("/urls/new", (req, res) => {
 // Show URL page
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
+
   const templateVars = {
     shortURL,
     longURL: urlDatabase[shortURL].longURL,
@@ -170,7 +172,7 @@ app.post("/urls", (req, res) => {
     userID: req.session.user_id,
   };
 
-  res.redirect("/urls");
+  res.redirect(`/urls/${shortURL}`);
 });
 
 // Redirect shortURL link to longURL
@@ -233,7 +235,9 @@ app.post("/login", (req, res) => {
   if (!user)
     return res
       .status(403)
-      .send("<h1>This user does not exist. Please log in as a different user.</h1>");
+      .send(
+        "<h1>This user does not exist. Please log in as a different user.</h1>"
+      );
 
   const checkPassword = bcrypt.compareSync(password, user.hashedPassword);
   if (!checkPassword)
