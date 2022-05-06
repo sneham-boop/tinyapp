@@ -1,13 +1,23 @@
 // ** Setup ** //
 const express = require("express");
+const bcrypt = require("bcryptjs");
+const bodyParser = require("body-parser");
+var cookieSession = require("cookie-session");
 const app = express();
 const PORT = 8080; // default port 8080
-const bcrypt = require("bcryptjs");
-
-app.set("view engine", "ejs");
-
-// Static resources path
 app.use(express.static("public"));
+app.set("view engine", "ejs");
+const { findUserByEmail, urlsForUser, generateID } = require("./helpers");
+
+// ** Middleware ** //
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1", "key2"],
+    maxAge: 30 * 60 * 1000, // 30 minutes
+  })
+);
 
 // Test databases for urls and registered users
 const urlDatabase = {
@@ -56,62 +66,6 @@ const users = {
   },
 };
 
-// Middleware
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
-
-var cookieSession = require("cookie-session");
-app.use(
-  cookieSession({
-    name: "session",
-    keys: ["key1", "key2"],
-
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  })
-);
-
-// ** Helper functions ** //
-// Function implementation for generateRandomString()
-// Returns a randomly generated string of length strLen
-const generateID = () => {
-  let id = "";
-  let strLen = 6;
-  const chars =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-  for (let i = 0; i < strLen; i++) {
-    const randIndex = Math.floor(Math.random() * chars.length);
-    id = id.concat(chars[randIndex]);
-  }
-  return id;
-};
-
-// Function implementation for findUser()
-// Returns user if user email is found.
-const findUser = (email) => {
-  const user_ids = Object.keys(users);
-  const id = user_ids.find((user_id) => users[user_id].email === email);
-  const user = users[id];
-  return user;
-};
-
-// Function implementation for findURLs()
-// Returns URLs for user.
-const urlsForUser = (user) => {
-  const { id } = user;
-
-  let urls = {};
-  for (const shortURL in urlDatabase) {
-    const urlData = urlDatabase[shortURL];
-    if (urlData.userID === id) {
-      urls[shortURL] = urlDatabase[shortURL];
-    }
-  }
-
-  return urls;
-};
-
 // ** Routes ** //
 
 // Show all existing URLs
@@ -123,7 +77,7 @@ app.get("/urls", (req, res) => {
   if (!user) showURLs = false;
 
   // Show filtered URL's
-  if (user) urls = urlsForUser(user);
+  if (user) urls = urlsForUser(user, urlDatabase);
   const numberOfURLs = Object.keys(urls).length;
 
   const templateVars = {
@@ -230,7 +184,7 @@ app.get("/login", (req, res) => {
 // Login
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = findUser(email);
+  const user = findUserByEmail(email, users);
 
   if (!user)
     return res
@@ -270,7 +224,7 @@ app.post("/register", (req, res) => {
   const id = generateID();
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
-  const user = findUser(email);
+  const user = findUserByEmail(email, users);
 
   if (email === "" || password === "")
     res.status(400).send("<h1>Enter a valid email and/or password.</h1>");
