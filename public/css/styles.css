@@ -44,7 +44,7 @@
 
 /* Hide register and login links in mobile view */
 @media (max-width: 767px) {
-  #login-register-links {
+  #login-register-links,#logout-nav-form {
     position: absolute;
     left: -100px;
     top: -100px;
