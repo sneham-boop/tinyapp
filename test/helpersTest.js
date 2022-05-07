@@ -57,9 +57,9 @@ describe("#urlsForUser", function () {
   it("returns a url owned by user id", function () {
     const user = testUsers.RhJsk8;
     const expectedLongURL = ["http://www.lighthouselabs.ca"];
-    const urls = urlsForUser(user,testUrlDatabase);
+    const urls = urlsForUser(user, testUrlDatabase);
     let longURL = [];
-    for(const url in urls) {
+    for (const url in urls) {
       longURL.push(urls[url].longURL);
     }
     assert.deepEqual(longURL, expectedLongURL);
@@ -67,7 +67,7 @@ describe("#urlsForUser", function () {
 
   it("returns undefined for an invalid user id", function () {
     const user = testUsers.RhJsk9;
-    const urls = urlsForUser(user,testUrlDatabase);
+    const urls = urlsForUser(user, testUrlDatabase);
     assert.strictEqual(urls, undefined);
   });
 });

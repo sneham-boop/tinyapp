@@ -28,7 +28,6 @@ const findUserByEmail = (email, database) => {
 // Function implementation for findURLs()
 // Returns URLs for user.
 const urlsForUser = (user, database) => {
-
   if (!user) return undefined;
 
   const { id } = user;
