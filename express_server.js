@@ -47,22 +47,22 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    hashedPassword: "purple-monkey-dinosaur",
+    hashedPassword: bcrypt.hashSync("purple-monkey-dinosaur", 10),
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    hashedPassword: "dishwasher-funk",
+    hashedPassword: bcrypt.hashSync("dishwasher-funk", 10),
   },
   "9sm5xK": {
     id: "9sm5xK",
     email: "bob@bob.com",
-    hashedPassword: "bob",
+    hashedPassword: bcrypt.hashSync("bob", 10),
   },
   b2xVn2: {
     id: "b2xVn2",
     email: "sneha@sneha.com",
-    hashedPassword: "sneha",
+    hashedPassword: bcrypt.hashSync("sneha", 10),
   },
 };
 
@@ -102,6 +102,15 @@ app.get("/urls/new", (req, res) => {
       .send("<h1>You must log in to create a new URL.</h1>");
 
   res.render("urls_new", templateVars);
+});
+
+// Redirect user link to /urls for these routes
+app.get("/", (req, res) => {
+  res.redirect("/urls");
+});
+
+app.get("/home", (req, res) => {
+  res.redirect("/urls");
 });
 
 // Show URL page

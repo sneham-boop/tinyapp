@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/mocha/bin/mocha",
     "start": "./node_modules/.bin/nodemon express_server.js"
   },
   "repository": {
@@ -27,6 +27,8 @@
     "express": "^4.18.0"
   },
   "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
     "nodemon": "^2.0.16"
   }
 }

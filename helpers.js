@@ -17,6 +17,8 @@ const generateID = () => {
 // Function implementation for findUserByEmail()
 // Returns user if user email is found in user database.
 const findUserByEmail = (email, database) => {
+  if (email === null || database === null) return undefined;
+
   const user_ids = Object.keys(database);
   const id = user_ids.find((user_id) => database[user_id].email === email);
   const user = database[id];
@@ -26,6 +28,9 @@ const findUserByEmail = (email, database) => {
 // Function implementation for findURLs()
 // Returns URLs for user.
 const urlsForUser = (user, database) => {
+
+  if (!user) return undefined;
+
   const { id } = user;
 
   let urls = {};
@@ -39,9 +44,8 @@ const urlsForUser = (user, database) => {
   return urls;
 };
 
-
 module.exports = {
   findUserByEmail,
   generateID,
   urlsForUser,
-}
+};
