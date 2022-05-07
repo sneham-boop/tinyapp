@@ -1,20 +1,25 @@
 <!-- User login page -->
 <%- include('partials/_header') %>
   <main>
-    <div class="container ml-0 mt-3 pl-0">
-      <h3 class="col">Login</h3>
-      <form class="col" action="/login" method="POST">
-        <label for="loginEmail">Email Address</label>
-        <input id="loginEmail" class="form-control ml-0 mt-0" type="email" name="email" placeholder="Enter your email"
-          style="width: 300px; margin: 1em">
-        <label for="loginPassword">Password</label>
-        <input id="loginPassword" class="form-control ml-0 mt-0" type="password" name="password" placeholder="Password"
-          style="width: 300px; margin: 1em">
-        <button type="submit" class="btn btn-primary">Login</button>
-        <p id="register-link-text">If you do not have an account, please register <a class="generic-link"
-            href="/register">here.</a></p>
-      </form>
-    </div>
+    <% if(text) { %>
+      <div class="alert alert-warning" role="alert">
+        <%=text%>
+      </div>
+      <% } %>
+        <div class="container ml-0 mt-3 pl-0">
+          <h3 class="col">Login</h3>
+          <form class="col" action="/login" method="POST">
+            <label for="loginEmail">Email Address</label>
+            <input id="loginEmail" class="form-control ml-0 mt-0" type="email" name="email"
+              placeholder="Enter your email" style="width: 300px; margin: 1em">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" class="form-control ml-0 mt-0" type="password" name="password"
+              placeholder="Password" style="width: 300px; margin: 1em">
+            <button type="submit" class="btn btn-primary">Login</button>
+            <p id="register-link-text">If you do not have an account, please register <a class="generic-link"
+                href="/register">here.</a></p>
+          </form>
+        </div>
   </main>
 
   <%- include('partials/_bootstrap_scripts') %>

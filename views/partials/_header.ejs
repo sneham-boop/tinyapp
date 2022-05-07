@@ -15,14 +15,17 @@
 
       <!-- Login/Register -->
       <% if(user===undefined){ %>
-        <a id="register-link" class="d-flex justify-content-end mr-3 nav-item" href="/register">Register</a>
-        <a id="login-link" class="d-flex justify-content-end nav-item" href="/login">Login</a>
-        <% } else { %>
-          <form class="form-inline d-flex justify-content-end" method="POST" action="/logout">
-            <p class="h6 mb-0 mr-2">Logged in as: <%=user.email %>!
-            </p>
-            <button type="submit" class="btn btn-outline-dark" formmethod="POST" formaction="/logout">Logout</button>
-          </form>
-          <% } %>
+        <div id="login-register-links" class="d-flex flex-row">
+          <a id="register-link" class="d-flex justify-content-end mr-3 nav-item" href="/register">Register</a>
+          <a id="login-link" class="d-flex justify-content-end nav-item" href="/login">Login</a>
+          <% } else { %>
+            <form class="form-inline d-flex justify-content-end" method="POST" action="/logout">
+              <p class="h6 mb-0 mr-2">Logged in as: <%=user.email %>!
+              </p>
+              <button type="submit" class="btn btn-outline-dark" formmethod="POST" formaction="/logout">Logout</button>
+            </form>
+        </div>
+        <% } %>
+
     </nav>
   </header>

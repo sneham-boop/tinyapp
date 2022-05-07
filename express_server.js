@@ -7,11 +7,12 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
+const { findUserByEmail, urlsForUser, generateID } = require("./helpers");
+
 const app = express();
+app.set("view engine", "ejs");
 const PORT = 8080; // default port 8080
 app.use(express.static("public"));
-app.set("view engine", "ejs");
-const { findUserByEmail, urlsForUser, generateID } = require("./helpers");
 
 // ** Middleware ** //
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,7 +20,7 @@ app.use(
   cookieSession({
     name: "session",
     keys: ["key1", "key2"],
-    maxAge: 30 * 60 * 1000, // 30 minutes
+    maxAge: 30 * 60 * 1000, // 30 minutes session
   })
 );
 
@@ -100,10 +101,15 @@ app.get("/urls/new", (req, res) => {
     user: users[req.session.userID],
     title: "New URL - TinyApp",
   };
-  if (!templateVars.user)
-    return res
-      .status(403)
-      .send("<h1>You must log in to create a new URL.</h1>");
+
+  if (!templateVars.user) {
+    const message = {
+      user: users[req.session.userID],
+      text: "Please login before creating a new URL!",
+      title: "User Login - TinyApp",
+    };
+    return res.status(403).render("urls_login", message);
+  }
 
   res.render("urls_new", templateVars);
 });
@@ -159,8 +165,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.userID;
 
-  if (!userID)
-    return res.status(403).send("<h1>You must log in to delete this URL.</h1>");
+  if (!userID) {
+    const message = {
+      user: undefined,
+      text: "You must log in before deleting this URL!",
+      title: "User Login - TinyApp",
+    };
+    return res.status(403).render("urls_login", message);
+  }
 
   delete urlDatabase[shortURL];
   res.redirect("/urls");
@@ -172,8 +184,14 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const userID = req.session.userID;
 
-  if (!userID)
-    return res.status(403).send("<h1>You must log in to edit this URL.</h1>");
+  if (!userID) {
+    const message = {
+      user: undefined,
+      text: "You must log in before editing this URL!",
+      title: "User Login - TinyApp",
+    };
+    return res.status(403).render("urls_login", message);
+  }
 
   urlDatabase[shortURL] = {
     longURL: newLongURL,
@@ -187,6 +205,7 @@ app.get("/login", (req, res) => {
   const templateVars = {
     user: users[req.session.userID],
     title: "User login - TinyApp",
+    text: "",
   };
 
   if (templateVars.user) return res.redirect("/urls");
@@ -198,17 +217,23 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = findUserByEmail(email, users);
+  const message = {
+    user: undefined,
+    text: "",
+    title: "User Login - TinyApp",
+  };
 
-  if (!user)
-    return res
-      .status(403)
-      .send(
-        "<h1>This user does not exist. Please log in as a different user.</h1>"
-      );
+  if (!user) {
+    message.text =
+      "This user does not exist. Please log in as a different user!";
+    return res.status(403).render("urls_login", message);
+  }
 
   const checkPassword = bcrypt.compareSync(password, user.hashedPassword);
-  if (!checkPassword)
-    return res.status(403).send("<h1>This password is incorrect.</h1>");
+  if (!checkPassword) {
+    message.text = "Password is incorrect. Please try a different one!";
+    return res.status(403).render("urls_login", message);
+  }
 
   req.session.userID = user.id;
   res.redirect("/urls");
@@ -225,6 +250,7 @@ app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.session.userID],
     title: "Register User - TinyApp",
+    text: "",
   };
 
   if (templateVars.user) return res.redirect("/urls");
@@ -237,26 +263,32 @@ app.post("/register", (req, res) => {
   const id = generateID();
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
-  const user = findUserByEmail(email, users);
 
-  if (email === "" || password === "")
-    res.status(400).send("<h1>Enter a valid email and/or password.</h1>");
+  const user = findUserByEmail(email, users);
+  const message = {
+    user: undefined,
+    text: "",
+    title: "Register User - TinyApp",
+  };
+
+  if (email === "" || password === "") {
+    message.text = "Enter a valid email and/or password.";
+    return res.status(400).render("urls_register", message);
+  }
 
   if (user) {
-    res
-      .status(400)
-      .send("<h1>This user already exists. Enter a new email.</h1>");
-  } else {
-    // Add user
-    users[id] = {
-      id,
-      email,
-      hashedPassword,
-    };
-
-    req.session.userID = users[id].id;
-    res.redirect("/urls");
+    message.text = "This user already exists. Enter a new email.";
+    return res.status(400).render("urls_register", message);
   }
+  // Add user if info valid
+  users[id] = {
+    id,
+    email,
+    hashedPassword,
+  };
+
+  req.session.userID = users[id].id;
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {

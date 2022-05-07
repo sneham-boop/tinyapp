@@ -1,18 +1,23 @@
 <!-- Register a new user -->
 <%- include('partials/_header') %>
   <main>
-    <div class="container ml-0 mt-3 pl-0">
-      <h3 class="col">Create Account</h3>
-      <form class="col" action="/register" method="POST">
-        <label for="registeremail">Email Address</label>
-        <input id="registerEmail" class="form-control ml-0 mt-0" type="email" name="email"
-          placeholder="Enter your email" style="width: 300px; margin: 1em">
-        <label for="registerPassword">Password</label>
-        <input id="registerPassword" class="form-control ml-0 mt-0" type="password" name="password"
-          placeholder="Password" style="width: 300px; margin: 1em">
-        <button type="submit" class="btn btn-primary">Register</button>
-      </form>
-    </div>
+    <% if(text) { %>
+      <div class="alert alert-warning" role="alert">
+        <%=text%>
+      </div>
+      <% } %>
+        <div class="container ml-0 mt-3 pl-0">
+          <h3 class="col">Create Account</h3>
+          <form class="col" action="/register" method="POST">
+            <label for="registeremail">Email Address</label>
+            <input id="registerEmail" class="form-control ml-0 mt-0" type="email" name="email"
+              placeholder="Enter your email" style="width: 300px; margin: 1em">
+            <label for="registerPassword">Password</label>
+            <input id="registerPassword" class="form-control ml-0 mt-0" type="password" name="password"
+              placeholder="Password" style="width: 300px; margin: 1em">
+            <button type="submit" class="btn btn-primary">Register</button>
+          </form>
+        </div>
   </main>
 
   <%- include('partials/_bootstrap_scripts') %>
