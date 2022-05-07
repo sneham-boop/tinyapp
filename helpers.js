@@ -19,8 +19,8 @@ const generateID = () => {
 const findUserByEmail = (email, database) => {
   if (email === null || database === null) return undefined;
 
-  const user_ids = Object.keys(database);
-  const id = user_ids.find((user_id) => database[user_id].email === email);
+  const userIDs = Object.keys(database);
+  const id = userIDs.find((userID) => database[userID].email === email);
   const user = database[id];
   return user;
 };
