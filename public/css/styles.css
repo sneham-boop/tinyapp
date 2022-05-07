@@ -46,7 +46,7 @@
 @media (max-width: 767px) {
   #login-register-links {
     position: absolute;
-    left: 100px;
-    top: 100px;
+    left: -100px;
+    top: -100px;
   }
 }
